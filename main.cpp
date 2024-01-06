@@ -72,9 +72,9 @@ set<string> And(vector<string>& v, const map<string, set<string>>& m, set<string
 
     return And(v, m, result);
 }
-set<string> Or(const vector<string>& v, const map<string, set<string>>& m,set<string> filenames) {
-
+set<string> Or(vector<string> v, const map<string, set<string>>& m, set<string> filenames) {
     set<string> result;
+
     for (const string& word : v) {
         auto it = m.find(word);
         if (it != m.end()) {
@@ -82,12 +82,11 @@ set<string> Or(const vector<string>& v, const map<string, set<string>>& m,set<st
             result.insert(filesWithWord.begin(), filesWithWord.end());
         }
     }
-    for(const auto& file:filenames){
-        if(result.count(file) < 1){
-            filenames.erase(file);
-        }
-    }
-    return filenames;
+
+    set<string> intersectResult;
+    set_intersection(result.begin(), result.end(), filenames.begin(), filenames.end(), inserter(intersectResult, intersectResult.begin()));
+
+    return intersectResult;
 }
 
 set<string> Not(const vector<string>& v, const map<string, set<string>>& m, set<string> filenames) {
@@ -118,21 +117,21 @@ void search(const map<string, set<string>>& m, const set<string>& filenames) {
     while (getline(ss, word, ' ')) {
         transform(word.begin(), word.end(), word.begin(), ::toupper);
 
-            if (word[0] == '+') {
+        if (word[0] == '+') {
 
-                word = word.substr(1);
-                or_input.push_back(word);
+            word = word.substr(1);
+            or_input.push_back(word);
 
-            } else if (word[0] == '-') {
+        } else if (word[0] == '-') {
 
-                word = word.substr(1);
-                not_input.push_back(word);
+            word = word.substr(1);
+            not_input.push_back(word);
 
-            } else {
+        } else {
 
-                and_input.push_back(word);
+            and_input.push_back(word);
 
-            }
+        }
 
     }
     result = filenames;
